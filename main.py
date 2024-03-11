@@ -44,7 +44,8 @@ async def receive_name_and_image(image: UploadFile = File(...)):
     text = text_extraction(image_path)  # Pass the byte array to text_extraction
     # remove the image
     os.remove(image_path)
-    return JSONResponse(content={"result": text})
+    return JSONResponse(content=text)
+    # return JSONResponse(content={"result": text})
 
   
 if __name__ == "__main__":
