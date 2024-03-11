@@ -3,6 +3,8 @@ import numpy as np
 import time
 import cv2
 import pytesseract
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'  # Adjust if needed
+
 
 net = cv2.dnn.readNet("models/frozen_east_text_detection.pb")
 
