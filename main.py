@@ -1,13 +1,29 @@
-from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
+from read_perception.Text_extraction import text_extraction
+from fastapi import FastAPI, File, UploadFile, Request
+
+
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import shutil
 import os
-from Ai_model.Text_extraction import text_extraction
-app = FastAPI()
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'  # Adjust if needed
 
+
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+templates = Jinja2Templates(directory="templates")
 from PIL import Image
 
-
+@app.get("/", response_class=HTMLResponse)
+async def upload_image_form( request: Request):
+    """
+    Displays the HTML form to upload an image.
+    """
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/upload")
 async def receive_name_and_image(image: UploadFile = File(...)):
@@ -20,7 +36,7 @@ async def receive_name_and_image(image: UploadFile = File(...)):
     Returns:
         JSONResponse: A JSON response containing a text result.
     """
-    image_path=f"data/{image.filename}"
+    image_path=f"{image.filename}"
     with open(image_path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 

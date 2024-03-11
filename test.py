@@ -5,7 +5,7 @@ client = TestClient(app)
 
 def test_upload_image():
     # Read a sample image file in binary mode
-    image_path="Ai_model/Inputs/img.JPG"
+    image_path="read_perception/Inputs/img.JPG"
     assert os.path.exists(image_path)
     with open(  image_path,"rb") as image_file:
         files = {"image": ("test_image.jpg", image_file, "image/jpeg")}
