@@ -2,11 +2,33 @@ import pytesseract
 from pytesseract import Output
 import cv2
 import PIL.Image
+import json
 
 myConfig = r"--psm 4 --oem 3"
 
-text = pytesseract.image_to_string(PIL.Image.open("images-test/ocr-eng.png"), lang='eng', config=myConfig)
-print(text)
+text = pytesseract.image_to_string(PIL.Image.open("imgs/prescription.png"), lang='eng', config=myConfig)
+types = text.split('\n')
+
+def converter(types):
+    out = []
+    for index in range(len(types)):
+        dic = {"name": "NAN", "times": "NAN", "dose": "NAN", "notes": "NAN"}
+        if len(types[index]):
+            type = types[index].split()
+            dic["name"] = type[0]
+            if "time" in type: dic["times"] = type[type.index("time") - 1]
+            if "times" in type: dic["times"] = type[type.index("times") - 1]
+            if "mm" in type: dic["dose"] = type[type.index("mm") - 1]
+            if "--" in type:
+                note, i = "", type.index("--") + 1
+                while i < len(type):
+                    note += type[i] + " "
+                    i += 1
+                dic["notes"] = note
+            to_json = json.dumps(dic)
+            out.append(to_json)
+    return out
+print(*converter(types), sep='\n')
 
 """
 Page segmentation modes(psm):
